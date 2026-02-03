@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Will You Be My Valentine? 💖</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== MOBILE-FIRST RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 15px;
+            color: #333;
+        }
+
+        /* ===== MUSIC CONTROLS ===== */
+        .music-controls {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .music-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #ff4d6d;
+            font-size: 1.3rem;
+        }
+
+        .music-btn:hover, .music-btn:active {
+            transform: scale(1.1);
+            background: white;
+        }
+
+        .music-status {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            color: #ff4d6d;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 200px;
+            opacity: 1;
+            transform: translateX(0);
+            transition: all 0.3s ease;
+        }
+
+        .music-status.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Volume slider */
+        .volume-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 60px;
+            right: 0;
+        }
+
+        .volume-container.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 5px;
+            -webkit-appearance: none;
+            background: #ffccd5;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ff4d6d;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Music notes animation */
+        .music-note {
+            position: fixed;
+            color: #ff4d6d;
+            opacity: 0.2;
+            font-size: 1.5rem;
+            animation: floatNote 15s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .proposal-container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            padding: 25px 20px;
+            position: relative;
+            z-index: 10;
+            border: 8px solid #ff6b8b;
+            overflow: hidden;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .title {
+            font-family: 'Dancing Script', cursive;
+            color: #ff4d6d;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(255, 107, 139, 0.2);
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        /* ===== HEART ICON ===== */
+        .heart-icon {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .heart-icon i {
+            color: #ff4d6d;
+            font-size: 4rem;
+            animation: heartbeat 1.2s infinite;
+        }
+
+        /* ===== MESSAGE SECTION ===== */
+        .message-section {
+            background: linear-gradient(135deg, rgba(255, 240, 243, 0.9), rgba(255, 204, 213, 0.7));
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.5);
+            border-left: 5px solid #ff4d6d;
+        }
+
+        .message-title {
+            font-family: 'Dancing Script', cursive;
+            color: #ff4d6d;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .message-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #444;
+            text-align: center;
+        }
+
+        /* ===== QUESTION SECTION ===== */
+        .question-section {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .question {
+            font-family: 'Dancing Script', cursive;
+            color: #ff4d6d;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            padding: 0 10px;
+        }
+
+        /* ===== BUTTONS AREA ===== */
+        .buttons-area {
+            position: relative;
+            height: 280px;
+            width: 100%;
+            margin: 30px 0;
+            overflow: hidden;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            touch-action: none;
+            border: 2px dashed #ffb8c6;
+        }
+
+        .button-container {
+            position: absolute;
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+
+        .button {
+            padding: 18px 35px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 180px;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .yes-button {
+            background: linear-gradient(135deg, #ff4d6d, #ff8fab);
+            color: white;
+            z-index: 20;
+        }
+
+        .no-button {
+            background: linear-gradient(135deg, #6c757d, #adb5bd);
+            color: white;
+            position: absolute;
+            z-index: 15;
+        }
+
+        .button i {
+            margin: 0 10px;
+            font-size: 1.3rem;
+        }
+
+        /* Touch feedback */
+        .button:active {
+            transform: scale(0.95);
+        }
+
+        .yes-button:active {
+            box-shadow: 0 4px 10px rgba(255, 77, 109, 0.4);
+        }
+
+        /* ===== MESSAGE DISPLAY ===== */
+        .message-display-container {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            z-index: 30;
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .message-display {
+            background: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: #ff4d6d;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 90%;
+            border: 2px solid #ff4d6d;
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .message-display.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== ATTEMPT COUNTER ===== */
+        .attempt-counter {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 15px;
+            border-radius: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ===== HEART RAIN ===== */
+        .heart-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0;
+            animation: fall linear forwards;
+        }
+
+        /* ===== SUCCESS SCREEN ===== */
+        .success-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s;
+            padding: 20px;
+        }
+
+        .success-content {
+            background: white;
+            border-radius: 25px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            transform: scale(0.8);
+            transition: transform 0.5s;
+            border: 10px solid #ff6b8b;
+        }
+
+        .success-title {
+            font-family: 'Dancing Script', cursive;
+            color: #ff4d6d;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 25px;
+        }
+
+        .celebration-hearts {
+            font-size: 3rem;
+            color: #ff4d6d;
+            margin: 20px 0;
+        }
+
+        /* ===== FLOATING ELEMENTS ===== */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: #ff4d6d;
+            opacity: 0.3;
+            font-size: 1.2rem;
+            animation: float linear infinite;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes fall {
+            to {
+                top: 100vh;
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floatNote {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes messagePop {
+            0% {
+                transform: translateY(-10px) scale(0.9);
+                opacity: 0;
+            }
+            70% {
+                transform: translateY(5px) scale(1.05);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ===== TOUCH HINT ===== */
+        .touch-hint {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        /* ===== RESPONSIVE ADJUSTMENTS ===== */
+        @media (max-width: 480px) {
+            .proposal-container {
+                padding: 20px 15px;
+                border-width: 6px;
+            }
+            
+            .title {
+                font-size: 2.3rem;
+            }
+            
+            .question {
+                font-size: 1.9rem;
+            }
+            
+            .button {
+                padding: 16px 30px;
+                font-size: 1.3rem;
+                min-width: 160px;
+            }
+            
+            .buttons-area {
+                height: 250px;
+            }
+            
+            .message-display {
+                font-size: 1.3rem;
+                padding: 10px 20px;
+            }
+            
+            .success-content {
+                padding: 30px 20px;
+            }
+            
+            .success-title {
+                font-size: 2.5rem;
+            }
+            
+            .success-message {
+                font-size: 1.1rem;
+            }
+            
+            .music-controls {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .music-status {
+                font-size: 0.8rem;
+                max-width: 150px;
+                padding: 8px 12px;
+            }
+            
+            .volume-container {
+                top: 55px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .question {
+                font-size: 1.7rem;
+            }
+            
+            .button {
+                padding: 14px 25px;
+                font-size: 1.2rem;
+                min-width: 140px;
+            }
+            
+            .message-display {
+                font-size: 1.2rem;
+                padding: 8px 16px;
+            }
+        }
+
+        /* Landscape orientation */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .proposal-container {
+                max-height: 90vh;
+                overflow-y: auto;
+                padding: 15px;
+            }
+            
+            .buttons-area {
+                height: 200px;
+            }
+            
+            .button {
+                padding: 12px 25px;
+                font-size: 1.2rem;
+            }
+            
+            .message-display-container {
+                top: 5px;
+            }
+            
+            .music-controls {
+                top: 5px;
+                right: 5px;
+            }
+        }
+
+        /* Prevent text selection */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hidden Audio Element -->
+    <audio id="backgroundMusic" loop autoplay>
+        <!-- Your perfect.mp3 will be loaded here -->
+    </audio>
+    
+    <!-- Celebration Audio -->
+    <audio id="celebrationMusic">
+        <!-- Celebration music will be loaded here -->
+    </audio>
+
+    <!-- Music Controls -->
+    <div class="music-controls">
+        <div class="music-status" id="musicStatus">
+            <i class="fas fa-music"></i>
+            <span id="statusText">Loading music...</span>
+        </div>
+        <button class="music-btn" id="playBtn">
+            <i class="fas fa-pause" id="playIcon"></i>
+        </button>
+        <button class="music-btn" id="volumeBtn">
+            <i class="fas fa-volume-up" id="volumeIcon"></i>
+        </button>
+    </div>
+    
+    <!-- Volume Slider -->
+    <div class="volume-container" id="volumeContainer">
+        <i class="fas fa-volume-down" style="color: #ff4d6d;"></i>
+        <input type="range" min="0" max="1" step="0.1" value="0.7" class="volume-slider" id="volumeSlider">
+        <i class="fas fa-volume-up" style="color: #ff4d6d;"></i>
+    </div>
+
+    <!-- Floating Music Notes -->
+    <div id="musicNotes"></div>
+
+    <!-- Floating Background Elements -->
+    <div class="floating-elements" id="floatingElements"></div>
+
+    <!-- Main Proposal Container -->
+    <div class="proposal-container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">My Dearest</h1>
+            <p class="subtitle">A question straight from my heart</p>
+        </div>
+
+        <!-- Heart Icon -->
+        <div class="heart-icon">
+            <i class="fas fa-heart"></i>
+        </div>
+
+        <!-- Message Section -->
+        <div class="message-section">
+            <h2 class="message-title">My Love For You</h2>
+            <p class="message-content">
+                From the moment we met, you've made every day brighter. 
+                Your smile is my sunrise, your laughter my favorite song. 
+                I can't imagine my life without you in it.
+            </p>
+        </div>
+
+        <!-- The Question -->
+        <div class="question-section">
+            <div class="question">Will you be my Valentine?</div>
+        </div>
+
+        <!-- Buttons Area -->
+        <div class="buttons-area" id="buttonsArea">
+            <!-- Message Display Container -->
+            <div class="message-display-container">
+                <div class="message-display" id="messageDisplay">
+                    Try to catch me! 💖
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-container" id="yesButtonContainer">
+                <button class="button yes-button" id="yesButton">
+                    <i class="fas fa-heart"></i> YES! <i class="fas fa-heart"></i>
+                </button>
+            </div>
+
+            <div class="button-container" id="noButtonContainer">
+                <button class="button no-button" id="noButton">
+                    <i class="far fa-times-circle"></i> NO <i class="far fa-times-circle"></i>
+                </button>
+            </div>
+
+            <!-- Attempt Counter -->
+            <div class="attempt-counter">
+                Tried to say no: <span id="attemptCount">0</span> times
+            </div>
+        </div>
+
+        <!-- Touch Hint -->
+        <div class="touch-hint">
+            Try to tap the NO button (it's tricky!)
+        </div>
+    </div>
+
+    <!-- Heart Rain -->
+    <div class="heart-rain" id="heartRain"></div>
+
+    <!-- Success Screen -->
+    <div class="success-screen" id="successScreen">
+        <div class="success-content">
+            <h2 class="success-title">You Said YES! 💖</h2>
+            <div class="celebration-hearts">🎉🥰💕🎊💘</div>
+            <p class="success-message">
+                You've made me the happiest person in the world! 
+                This Valentine's Day will be our first of many to come. 
+                I promise to love you more each day.
+            </p>
+            <div class="celebration-hearts">💝🌹💑💞✨</div>
+            <p style="margin-top: 20px; color: #666; font-size: 0.9rem;">
+                <i class="fas fa-music"></i> Celebration music is playing for our perfect moment!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Valentine's Proposal with AUTO-PLAY Local Music
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("💖 Valentine Proposal with Auto-Play Music 💖");
+            
+            // ===== AUDIO ELEMENTS =====
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            const celebrationMusic = document.getElementById('celebrationMusic');
+            const playBtn = document.getElementById('playBtn');
+            const volumeBtn = document.getElementById('volumeBtn');
+            const volumeContainer = document.getElementById('volumeContainer');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const musicStatus = document.getElementById('musicStatus');
+            const statusText = document.getElementById('statusText');
+            const playIcon = document.getElementById('playIcon');
+            const volumeIcon = document.getElementById('volumeIcon');
+            const musicNotes = document.getElementById('musicNotes');
+            
+            // ===== PROPOSAL ELEMENTS =====
+            const yesButton = document.getElementById('yesButton');
+            const noButton = document.getElementById('noButton');
+            const yesButtonContainer = document.getElementById('yesButtonContainer');
+            const noButtonContainer = document.getElementById('noButtonContainer');
+            const buttonsArea = document.getElementById('buttonsArea');
+            const messageDisplay = document.getElementById('messageDisplay');
+            const attemptCountElement = document.getElementById('attemptCount');
+            const heartRain = document.getElementById('heartRain');
+            const successScreen = document.getElementById('successScreen');
+            const floatingElements = document.getElementById('floatingElements');
+            
+            // ===== STATE VARIABLES =====
+            let attemptCount = 0;
+            let yesScale = 1;
+            let isCelebrating = false;
+            let touchStartTime = 0;
+            let lastTouchX = 0;
+            let lastTouchY = 0;
+            let messageTimeout = null;
+            let isMusicPlaying = false;
+            let isMuted = false;
+            let hasMusicStarted = false;
+            
+            // ===== SONG LIST =====
+            // Using YOUR perfect.mp3 file in the same folder
+            const songs = {
+                background: {
+                    name: "Perfect Song",
+                    url: "perfect.mp3",  // Your local file in same folder
+                },
+                celebration: {
+                    name: "Celebration Song",
+                    // You can add celebration.mp3 or use the same song
+                    url: "perfect.mp3",  // Same file for celebration too
+                }
+            };
+            
+            // Messages for different attempts
+            const messages = [
+                "Are you sure? 💔",
+                "Think about us! 🌹",
+                "My heart... 😢",
+                "Just teasing, right? 😉",
+                "Give us a chance! 💕",
+                "You can't resist! 💘",
+                "Say YES already! 🥰",
+                "I'll never give up! 💪",
+                "Our love is meant to be! 💖",
+                "You're making me try harder! 😘",
+                "YES is such a beautiful word! ✨",
+                "Okay, you win! But say YES! 🏆"
+            ];
+            
+            // ===== MUSIC FUNCTIONS =====
+            // Initialize audio and AUTO-PLAY
+            function initializeAudio() {
+                console.log("Initializing audio...");
+                
+                // Set initial volume
+                backgroundMusic.volume = 0.7;
+                celebrationMusic.volume = 0.7;
+                volumeSlider.value = 0.7;
+                
+                // Set source to YOUR perfect.mp3
+                backgroundMusic.src = songs.background.url;
+                backgroundMusic.load();
+                
+                // Set celebration music (using same file)
+                celebrationMusic.src = songs.celebration.url;
+                celebrationMusic.load();
+                
+                // Try to AUTO-PLAY immediately
+                setTimeout(() => {
+                    startAutoPlay();
+                }, 500);
+                
+                // Setup event listeners for audio
+                backgroundMusic.addEventListener('play', function() {
+                    console.log("Music started playing!");
+                    isMusicPlaying = true;
+                    playIcon.className = 'fas fa-pause';
+                    statusText.textContent = "Playing romantic music";
+                    hasMusicStarted = true;
+                    createMusicNotes(); // Create visual notes
+                });
+                
+                backgroundMusic.addEventListener('pause', function() {
+                    console.log("Music paused");
+                    isMusicPlaying = false;
+                    playIcon.className = 'fas fa-play';
+                    statusText.textContent = "Music paused";
+                });
+                
+                backgroundMusic.addEventListener('ended', function() {
+                    console.log("Music ended, restarting...");
+                    // Loop the background music
+                    backgroundMusic.currentTime = 0;
+                    backgroundMusic.play();
+                });
+                
+                backgroundMusic.addEventListener('error', function(e) {
+                    console.error("Music error:", e);
+                    statusText.textContent = "Music error - check perfect.mp3 file";
+                    statusText.style.color = "#ff0000";
+                });
+                
+                backgroundMusic.addEventListener('canplaythrough', function() {
+                    console.log("Music can play through");
+                    statusText.textContent = "Ready to play...";
+                });
+                
+                celebrationMusic.addEventListener('ended', function() {
+                    // Stop celebration music when it ends
+                    celebrationMusic.pause();
+                    celebrationMusic.currentTime = 0;
+                });
+            }
+            
+            // Start AUTO-PLAY with user interaction workaround
+            function startAutoPlay() {
+                console.log("Attempting auto-play...");
+                
+                // First try to play immediately
+                backgroundMusic.play().then(() => {
+                    console.log("Auto-play successful!");
+                    isMusicPlaying = true;
+                    playIcon.className = 'fas fa-pause';
+                    statusText.textContent = "Playing romantic music";
+                    createMusicNotes();
+                    
+                    // Start continuous music notes
+                    setInterval(createMusicNotes, 8000);
+                }).catch(error => {
+                    console.log("Auto-play prevented:", error);
+                    statusText.textContent = "Tap anywhere to start music";
+                    
+                    // Add a click listener to start on first user interaction
+                    const startOnClick = function() {
+                        console.log("User interacted, starting music...");
+                        backgroundMusic.play().then(() => {
+                            statusText.textContent = "Playing romantic music";
+                            createMusicNotes();
+                            setInterval(createMusicNotes, 8000);
+                        }).catch(e => {
+                            console.log("Still couldn't play:", e);
+                            statusText.textContent = "Tap play button to start music";
+                        });
+                        document.removeEventListener('click', startOnClick);
+                        document.removeEventListener('touchstart', startOnClick);
+                    };
+                    
+                    // Listen for any user interaction
+                    document.addEventListener('click', startOnClick);
+                    document.addEventListener('touchstart', startOnClick);
+                });
+            }
+            
+            // Create floating music notes
+            function createMusicNotes() {
+                if (!hasMusicStarted) return;
+                
+                const notes = ['♪', '♫', '♬', '🎵', '🎶', '🎼'];
+                
+                // Create 3-5 notes at a time
+                const noteCount = Math.floor(Math.random() * 3) + 3;
+                
+                for (let i = 0; i < noteCount; i++) {
+                    setTimeout(() => {
+                        const note = document.createElement('div');
+                        note.classList.add('music-note');
+                        note.textContent = notes[Math.floor(Math.random() * notes.length)];
+                        
+                        const size = Math.random() * 30 + 20;
+                        const startLeft = Math.random() * 100;
+                        const duration = Math.random() * 20 + 10;
+                        const delay = Math.random() * 5;
+                        
+                        note.style.fontSize = `${size}px`;
+                        note.style.left = `${startLeft}vw`;
+                        note.style.animationDuration = `${duration}s`;
+                        note.style.animationDelay = `${delay}s`;
+                        
+                        musicNotes.appendChild(note);
+                        
+                        setTimeout(() => {
+                            note.remove();
+                        }, (duration + delay) * 1000);
+                    }, i * 300);
+                }
+            }
+            
+            // Play/pause music
+            function toggleMusic() {
+                if (isCelebrating) {
+                    // If celebrating, control celebration music
+                    if (celebrationMusic.paused) {
+                        celebrationMusic.play();
+                        statusText.textContent = "Playing celebration";
+                    } else {
+                        celebrationMusic.pause();
+                        statusText.textContent = "Paused";
+                    }
+                    return;
+                }
+                
+                if (backgroundMusic.paused) {
+                    backgroundMusic.play().then(() => {
+                        isMusicPlaying = true;
+                        playIcon.className = 'fas fa-pause';
+                        statusText.textContent = "Playing romantic music";
+                    }).catch(error => {
+                        console.log("Couldn't play:", error);
+                        statusText.textContent = "Tap to play music";
+                    });
+                } else {
+                    backgroundMusic.pause();
+                    isMusicPlaying = false;
+                    playIcon.className = 'fas fa-play';
+                    statusText.textContent = "Paused";
+                }
+            }
+            
+            // Play celebration music
+            function playCelebrationMusic() {
+                console.log("Starting celebration music!");
+                
+                // Pause background music
+                backgroundMusic.pause();
+                
+                // Play celebration music
+                celebrationMusic.currentTime = 0;
+                celebrationMusic.play().then(() => {
+                    statusText.textContent = "Celebration music! 🎉";
+                    
+                    // Create lots of music notes for celebration
+                    for (let i = 0; i < 30; i++) {
+                        setTimeout(() => {
+                            createMusicNote();
+                        }, i * 100);
+                    }
+                }).catch(error => {
+                    console.log("Couldn't play celebration:", error);
+                    // If celebration fails, resume background music
+                    backgroundMusic.play();
+                });
+            }
+            
+            // Create single music note
+            function createMusicNote() {
+                const notes = ['♪', '♫', '♬', '🎵', '🎶', '🎼'];
+                const note = document.createElement('div');
+                note.classList.add('music-note');
+                note.textContent = notes[Math.floor(Math.random() * notes.length)];
+                
+                const size = Math.random() * 40 + 30;
+                const startLeft = Math.random() * 100;
+                const duration = Math.random() * 10 + 5;
+                
+                note.style.fontSize = `${size}px`;
+                note.style.left = `${startLeft}vw`;
+                note.style.animationDuration = `${duration}s`;
+                note.style.color = '#ff4d6d';
+                note.style.opacity = '0.4';
+                
+                musicNotes.appendChild(note);
+                
+                setTimeout(() => {
+                    note.remove();
+                }, duration * 1000);
+            }
+            
+            // Toggle volume slider
+            function toggleVolumeSlider() {
+                volumeContainer.classList.toggle('show');
+            }
+            
+            // Update volume
+            function updateVolume() {
+                const volume = parseFloat(volumeSlider.value);
+                backgroundMusic.volume = volume;
+                celebrationMusic.volume = volume;
+                
+                // Update volume icon
+                if (volume === 0) {
+                    volumeIcon.className = 'fas fa-volume-mute';
+                    isMuted = true;
+                } else if (volume < 0.5) {
+                    volumeIcon.className = 'fas fa-volume-down';
+                    isMuted = false;
+                } else {
+                    volumeIcon.className = 'fas fa-volume-up';
+                    isMuted = false;
+                }
+            }
+            
+            // ===== INITIAL SETUP =====
+            // Initialize audio first (will try to auto-play)
+            initializeAudio();
+            
+            // Create floating hearts
+            createFloatingHearts();
+            
+            // Position buttons initially
+            positionButtons();
+            
+            // Set initial message
+            showMessage("Try to catch the NO button! 💖", 3000);
+            
+            // Setup music controls
+            playBtn.addEventListener('click', toggleMusic);
+            volumeBtn.addEventListener('click', toggleVolumeSlider);
+            volumeSlider.addEventListener('input', updateVolume);
+            
+            // ===== TOUCH/MOUSE EVENTS =====
+            buttonsArea.addEventListener('touchmove', handleTouchMove, { passive: false });
+            buttonsArea.addEventListener('mousemove', handleMouseMove);
+            
+            noButton.addEventListener('touchstart', function(e) {
+                touchStartTime = Date.now();
+                lastTouchX = e.touches[0].clientX;
+                lastTouchY = e.touches[0].clientY;
+            }, { passive: true });
+            
+            noButton.addEventListener('touchend', handleNoAttempt);
+            noButton.addEventListener('click', handleNoAttempt);
+            
+            yesButton.addEventListener('click', handleYesClick);
+            yesButton.addEventListener('touchend', handleYesClick);
+            
+            // ===== PROPOSAL FUNCTIONS =====
+            function positionButtons() {
+                const areaRect = buttonsArea.getBoundingClientRect();
+                const yesWidth = yesButtonContainer.offsetWidth;
+                const yesHeight = yesButtonContainer.offsetHeight;
+                const yesX = (areaRect.width - yesWidth) / 2;
+                const yesY = (areaRect.height - yesHeight) / 2;
+                
+                yesButtonContainer.style.left = `${yesX}px`;
+                yesButtonContainer.style.top = `${yesY}px`;
+                
+                const noX = yesX + yesWidth + 40;
+                const noY = yesY;
+                
+                noButtonContainer.style.left = `${noX}px`;
+                noButtonContainer.style.top = `${noY}px`;
+            }
+            
+            function handleTouchMove(e) {
+                if (isCelebrating) return;
+                e.preventDefault();
+                
+                const touch = e.touches[0];
+                const touchX = touch.clientX;
+                const touchY = touch.clientY;
+                
+                const noRect = noButtonContainer.getBoundingClientRect();
+                const areaRect = buttonsArea.getBoundingClientRect();
+                
+                const relativeX = touchX - areaRect.left;
+                const relativeY = touchY - areaRect.top;
+                
+                const noCenterX = parseFloat(noButtonContainer.style.left) + noRect.width / 2;
+                const noCenterY = parseFloat(noButtonContainer.style.top) + noRect.height / 2;
+                
+                const distance = Math.sqrt(
+                    Math.pow(relativeX - noCenterX, 2) + 
+                    Math.pow(relativeY - noCenterY, 2)
+                );
+                
+                if (distance < 100) {
+                    moveNoButtonAway(relativeX, relativeY);
+                    showMessage("Almost got me! 😄", 1500);
+                }
+            }
+            
+            function handleMouseMove(e) {
+                if (isCelebrating) return;
+                
+                const rect = buttonsArea.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                const noRect = noButtonContainer.getBoundingClientRect();
+                const noCenterX = parseFloat(noButtonContainer.style.left) + noRect.width / 2;
+                const noCenterY = parseFloat(noButtonContainer.style.top) + noRect.height / 2;
+                
+                const distance = Math.sqrt(
+                    Math.pow(mouseX - noCenterX, 2) + 
+                    Math.pow(mouseY - noCenterY, 2)
+                );
+                
+                if (distance < 80) {
+                    moveNoButtonAway(mouseX, mouseY);
+                    showMessage("Catch me if you can! 🏃‍♂️", 1500);
+                }
+            }
+            
+            function moveNoButtonAway(fromX, fromY) {
+                const areaRect = buttonsArea.getBoundingClientRect();
+                const buttonRect = noButtonContainer.getBoundingClientRect();
+                
+                const currentX = parseFloat(noButtonContainer.style.left);
+                const currentY = parseFloat(noButtonContainer.style.top);
+                
+                const buttonCenterX = currentX + buttonRect.width / 2;
+                const buttonCenterY = currentY + buttonRect.height / 2;
+                
+                let dx = buttonCenterX - fromX;
+                let dy = buttonCenterY - fromY;
+                
+                const magnitude = Math.sqrt(dx * dx + dy * dy);
+                dx /= magnitude;
+                dy /= magnitude;
+                
+                const escapeDistance = 120 + Math.random() * 60;
+                let newX = currentX + dx * escapeDistance;
+                let newY = currentY + dy * escapeDistance;
+                
+                const padding = 15;
+                const maxX = areaRect.width - buttonRect.width - padding;
+                const maxY = areaRect.height - buttonRect.height - padding;
+                
+                newX = Math.max(padding, Math.min(newX, maxX));
+                newY = Math.max(padding, Math.min(newY, maxY));
+                
+                noButtonContainer.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                noButtonContainer.style.left = `${newX}px`;
+                noButtonContainer.style.top = `${newY}px`;
+                
+                const rotation = (Math.random() - 0.5) * 25;
+                noButtonContainer.style.transform = `rotate(${rotation}deg)`;
+                
+                setTimeout(() => {
+                    noButtonContainer.style.transition = 'all 0.3s ease';
+                }, 400);
+            }
+            
+            function handleNoAttempt(e) {
+                if (isCelebrating) return;
+                
+                if (e.type === 'touchend') {
+                    e.preventDefault();
+                    const touchDuration = Date.now() - touchStartTime;
+                    if (touchDuration > 200) return;
+                }
+                
+                attemptCount++;
+                attemptCountElement.textContent = attemptCount;
+                
+                yesScale += 0.15;
+                yesButtonContainer.style.transform = `scale(${yesScale})`;
+                
+                const noScale = Math.max(0.5, 1 - (attemptCount * 0.1));
+                noButtonContainer.style.transform = `scale(${noScale}) rotate(${(Math.random() - 0.5) * 30}deg)`;
+                
+                const messageIndex = Math.min(attemptCount - 1, messages.length - 1);
+                showMessage(messages[messageIndex], 2000);
+                
+                moveToRandomPosition();
+                
+                yesButtonContainer.style.animation = 'pulse 0.5s ease';
+                setTimeout(() => {
+                    yesButtonContainer.style.animation = '';
+                }, 500);
+                
+                if (attemptCount >= 8) {
+                    showMessage("Okay, you win! Now say YES! 💖", 2500);
+                    setTimeout(() => {
+                        handleYesClick();
+                    }, 2500);
+                }
+            }
+            
+            function moveToRandomPosition() {
+                const areaRect = buttonsArea.getBoundingClientRect();
+                const buttonRect = noButtonContainer.getBoundingClientRect();
+                
+                const maxX = areaRect.width - buttonRect.width - 20;
+                const maxY = areaRect.height - buttonRect.height - 20;
+                
+                const randomX = 10 + Math.random() * maxX;
+                const randomY = 10 + Math.random() * maxY;
+                
+                noButtonContainer.style.left = `${randomX}px`;
+                noButtonContainer.style.top = `${randomY}px`;
+            }
+            
+            function handleYesClick(e) {
+                if (e) e.preventDefault();
+                if (isCelebrating) return;
+                
+                console.log("YES! Celebration time! 💖");
+                isCelebrating = true;
+                
+                // Play celebration music
+                playCelebrationMusic();
+                
+                // Show success screen
+                successScreen.style.opacity = '1';
+                successScreen.style.visibility = 'visible';
+                
+                setTimeout(() => {
+                    document.querySelector('.success-content').style.transform = 'scale(1)';
+                }, 100);
+                
+                // Start heart rain
+                heartRain.style.opacity = '1';
+                createHeartRain();
+                
+                // Create celebration effect
+                createCelebrationEffect();
+                
+                // Show final message
+                showMessage("YES! You made the right choice! 🎉", 5000);
+                
+                // Disable further interactions
+                yesButton.style.pointerEvents = 'none';
+                noButton.style.pointerEvents = 'none';
+                
+                // Update page title
+                document.title = "She Said YES! 💖";
+            }
+            
+            function showMessage(text, duration = 2000) {
+                if (messageTimeout) {
+                    clearTimeout(messageTimeout);
+                }
+                
+                messageDisplay.textContent = text;
+                messageDisplay.classList.remove('show');
+                void messageDisplay.offsetWidth;
+                messageDisplay.classList.add('show');
+                
+                messageDisplay.style.animation = 'messagePop 0.5s ease';
+                setTimeout(() => {
+                    messageDisplay.style.animation = '';
+                }, 500);
+                
+                messageTimeout = setTimeout(() => {
+                    messageDisplay.classList.remove('show');
+                }, duration);
+            }
+            
+            function createFloatingHearts() {
+                const heartEmojis = ['💖', '💕', '💗', '💓', '💞', '💝'];
+                
+                for (let i = 0; i < 15; i++) {
+                    setTimeout(() => {
+                        createFloatingHeart();
+                    }, i * 300);
+                }
+            }
+            
+            function createFloatingHeart() {
+                const heartEmojis = ['💖', '💕', '💗', '💓', '💞', '💝'];
+                const heart = document.createElement('div');
+                heart.classList.add('floating-heart');
+                heart.innerHTML = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                
+                const size = Math.random() * 25 + 15;
+                const startLeft = Math.random() * 100;
+                const duration = Math.random() * 20 + 15;
+                const delay = Math.random() * 5;
+                
+                heart.style.fontSize = `${size}px`;
+                heart.style.left = `${startLeft}vw`;
+                heart.style.animationDuration = `${duration}s`;
+                heart.style.animationDelay = `${delay}s`;
+                
+                floatingElements.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, (duration + delay) * 1000);
+            }
+            
+            function createHeartRain() {
+                const heartEmojis = ['💖', '💕', '💗', '💓', '💞', '💝', '😍', '🥰'];
+                
+                for (let i = 0; i < 120; i++) {
+                    setTimeout(() => {
+                        createHeartParticle();
+                    }, i * 25);
+                }
+                
+                const rainInterval = setInterval(() => {
+                    for (let i = 0; i < 5; i++) {
+                        createHeartParticle();
+                    }
+                }, 300);
+                
+                setTimeout(() => {
+                    clearInterval(rainInterval);
+                }, 20000);
+                
+                function createHeartParticle() {
+                    const heart = document.createElement('div');
+                    heart.classList.add('heart');
+                    heart.innerHTML = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                    
+                    const size = Math.random() * 30 + 20;
+                    const startLeft = Math.random() * 100;
+                    const duration = Math.random() * 4 + 2;
+                    const delay = Math.random() * 2;
+                    
+                    heart.style.fontSize = `${size}px`;
+                    heart.style.left = `${startLeft}vw`;
+                    heart.style.animationDuration = `${duration}s`;
+                    heart.style.animationDelay = `${delay}s`;
+                    
+                    heartRain.appendChild(heart);
+                    
+                    setTimeout(() => {
+                        if (heart.parentNode) {
+                            heart.remove();
+                        }
+                    }, (duration + delay) * 1000);
+                }
+            }
+            
+            function createCelebrationEffect() {
+                yesButtonContainer.style.animation = 'shake 0.5s ease 3';
+                
+                for (let i = 0; i < 40; i++) {
+                    setTimeout(() => {
+                        createFloatingHeart();
+                    }, i * 80);
+                }
+            }
+            
+            // Handle window resize
+            window.addEventListener('resize', positionButtons);
+            window.addEventListener('orientationchange', function() {
+                setTimeout(positionButtons, 300);
+            });
+            
+            // Prevent context menu
+            noButton.addEventListener('contextmenu', (e) => e.preventDefault());
+            yesButton.addEventListener('contextmenu', (e) => e.preventDefault());
+            
+            // Console instructions
+            console.log("🎵 Music Setup:");
+            console.log("1. Place 'perfect.mp3' in same folder as this HTML file");
+            console.log("2. Music will auto-play when page loads");
+            console.log("3. If it doesn't auto-play, tap anywhere on screen");
+            console.log("4. Use controls in top right to pause/volume");
+        });
+    </script>
+</body>
+</html>
